@@ -52,12 +52,18 @@ class Die:
             self.val = randrange(1,7) # min <= x < max
             self.label.setText(self.val) # update the die face
 
+
+    def clicked(self, pt):
+        "Returns true if p is inside"
+        return (self.xmin <= pt.getX() <= self.xmax
+                and self.ymin <= pt.getY() <= self.ymax)
+
     def setVal(self, newVal):
         "Sets the die to a given integer value."
         self.val = newVal
         self.label.setText(newVal)
 
-    def getVal(self):
+    def getValue(self):
         "Get the value of the die."
         return self.val
 

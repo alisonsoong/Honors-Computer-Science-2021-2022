@@ -236,43 +236,43 @@ class ScoreCell:
         elif dice.getValue() == 6:
             self.num6 += 1
 
-    def upper1():
+    def upper1(self):
         """calculates and updates the upper scoring 1 cell"""
         self.activate()
         val = self.num1 * 1
         self.setScore(val)
 
-    def upper2():
+    def upper2(self):
         """calculates and updates the upper scoring 2 cell"""
         self.activate()
         val = self.num2 * 2
         self.setScore(val)
 
-    def upper3():
+    def upper3(self):
         """calculates and updates the upper scoring 3 cell"""
         self.activate()
         val = self.num3 * 3
         self.setScore(val)
 
-    def upper4():
+    def upper4(self):
         """calculates and updates the upper scoring 4 cell"""
         self.activate()
         val = self.num4 * 4
         self.setScore(val)
 
-    def upper5():
+    def upper5(self):
         """calculates and updates the upper scoring 5 cell"""
         self.activate()
         val = self.num5 * 5
         self.setScore(val)
 
-    def upper6():
+    def upper6(self):
         """calculates and updates the upper scoring 6 cell"""
         self.activate()
         val = self.num6 * 6
         self.setScore(val)
 
-    def kind3():
+    def kind3(self):
         """calculates and updates the 3 of a kind cell"""
         self.activate()
         val = 0
@@ -285,7 +285,7 @@ class ScoreCell:
             val = self.num1*1 + self.num2*2 + self.num3*3 + self.num4*4 + self.num5*5 + self.num6*6 
         self.setScore(val)
 
-    def kind4():
+    def kind4(self):
         """calculates and updates the 4 of a kind cell"""
         self.activate()
         val = 0
@@ -298,7 +298,7 @@ class ScoreCell:
             val = self.num1*1 + self.num2*2 + self.num3*3 + self.num4*4 + self.num5*5 + self.num6*6 
         self.setScore(val)
         
-    def fullHouse():
+    def fullHouse(self):
         """calculates and updates the full house cell"""
         self.activate()
         val = 25 # full houses are 25 points
@@ -340,7 +340,7 @@ class ScoreCell:
             self.setScore(0)
         
 
-    def smallStraight():
+    def smallStraight(self):
         """calculates and updates the small straight cell"""
         self.activate()
         val = 30 # small straights are 30 points
@@ -369,12 +369,13 @@ class ScoreCell:
         else:
             self.setScore(0)
 
-    def largeStraight():
+    def largeStraight(self):
         """calculates and updates the small straight cell"""
         self.activate()
         val = 40 # large straights are 30 points
 
         # only options: 12345 23456
+        achieved = False
 
         if (self.num1 == 1 and
             self.num2 == 1 and
@@ -394,13 +395,13 @@ class ScoreCell:
         else:
             self.setScore(0)
 
-    def chance():
+    def chance(self):
         """calculates and updates the chance cell"""
         self.activate()
-        val = self.num1 + self.num2 + self.num3 + self.num4 + self.num5 + self.num6
+        val = self.num1 + self.num2*2 + self.num3*3 + self.num4*4 + self.num5*5 + self.num6*6
         self.setScore(val)
 
-    def yahtzee():
+    def yahtzee(self):
         """calculates and updates the yahtzee cell"""
         self.activate()
         val = 0
@@ -438,6 +439,10 @@ class ScoreCell:
         "Sets the label string of the cell."
         self.label.setText(newText)
 
+    def getScore(self):
+        "Gets the score of the cell."
+        return self.score
+
     def setScore(self, newVal):
         "Sets the score of the cell to given value."
         self.score = newVal
@@ -446,13 +451,13 @@ class ScoreCell:
     def activate(self):
         "Sets the cell to 'active'. Makes cell clickable."
         self.scoreLabel.setFill('black')
-        self.rectScore.setFill("white")
+        self.rectScore.setFill(color_rgb(235, 235, 235))
         self.active = True
 
     def deactivate(self):
         """Sets the cell to 'inactive'.
         Makes clicks on cell have no effect on the program."""
-        self.rectScore.setFill("lightgrey")
+        self.rectScore.setFill("white")
         self.scoreLabel.setFill("black")
         self.score = 0
         self.scoreLabel.setText("")
@@ -465,6 +470,10 @@ class ScoreCell:
         self.scoreLabel.setFill("black")
         self.active = False
         self.done = True
+
+    def isDone(self):
+        """Returns true if the cell is 'done'"""
+        return self.done
         
     def toggle(self):
         "Toggles a cell from activated to deactivated, or vice versa"

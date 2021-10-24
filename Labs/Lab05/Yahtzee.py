@@ -12,19 +12,28 @@ from graphics import *
 def Yahtzee():
     """A game of Yahtzee!"""
 
-    win = GraphWin("Yahtzee", 700, 600, autoflush=False)
-    win.setCoords(0,0,700,600)
+    win = GraphWin("Welcome to Yahtzee", 400, 400, autoflush=False)
+    win.setCoords(0,0,400,400)
 
     # ask for name
-    initText = Text(Point(350,430), "Welcome to Yahtzee!").draw(win)
-    initText2 = Text(Point(350,410), "Enter your name:").draw(win)
-    nameEntry = Entry(Point(350, 380), 30)
+    initText = Text(Point(200,270), "Welcome to Yahtzee!").draw(win)
+    initText2 = Text(Point(200,255), "Enter your name:").draw(win)
+    nameEntry = Entry(Point(200, 230), 30)
     nameEntry.draw(win)
-    continueButton = Button(win, Point(350, 340), 100, 30, "Click to start!")
+    continueButton = Button(win, Point(200, 190), 100, 30, "Start")
     continueButton.activate()
     pt = win.getMouse()
-    while not(continueButton.clicked(pt)):
+    
+    while True:
+        if (not(nameEntry.getText() == "") and continueButton.clicked(pt)):
+            break
+        Text(Point(200, 150), "Please enter your name to continue.").draw(win)
         pt = win.getMouse()
+
+    win.close()
+
+    win = GraphWin("Yahtzee", 700, 600, autoflush=False)
+    win.setCoords(0,0,700,600)
 
     name = nameEntry.getText()
     print("Player's name: " + name)
@@ -39,7 +48,9 @@ def Yahtzee():
     highScoreLabel = Text(Point(100, 510), "High score: NA")
     highScoreLabel.draw(win)
     highScore = 0
-    
+    numGamesLabel = Text(Point(100, 490), "Games played: 0")
+    numGamesLabel.draw(win)
+    numGames = 0
     
 
     # create the dice
@@ -104,7 +115,7 @@ def Yahtzee():
     # provided a first Yahtzee was found and Yahtzee cell is not 0
     seenYahtzee = False # only when seenYahtzee is true will bonus points be added
     bonusFromUpper = 0 # bonus points from upper scores: 63 or more upper -> 35 points extra
-
+    
 
     
     while not(quitButton.clicked(pt)):
@@ -152,6 +163,8 @@ def Yahtzee():
             if totalScore > highScore:
                 highScore = totalScore
             highScoreLabel.setText("High score: " + str(highScore))
+            numGames += 1
+            numGamesLabel.setText("Games played: " + str(numGames))
             
             replayButton = Button(win, Point(100+100+30, 130), 150, 40, "Click to Replay") 
             replayButton.activate()
@@ -186,12 +199,19 @@ def Yahtzee():
             largeStraightCell.resetForGame()
             chanceCell.resetForGame()
             yahtzeeCell.resetForGame()
-            win.update()
-            rollsCount = 0
+            d1.activate()
+            d2.activate()
+            d3.activate()
+            d4.activate()
+            d5.activate()
+            rollButton.activate()
 
+            
+            win.update()
+            
+            rollsCount = 0
             totalScore = 0
             upperScoresTotal = 0
-
             bonusFromYahtzee = 0 # bonus points from subsequent Yahtzees
             seenYahtzee = False # only when seenYahtzee is true will bonus points be added
             bonusFromUpper = 0 # bonus points from upper scores: 63 or more upper -> 35 points extra

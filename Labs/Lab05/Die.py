@@ -12,7 +12,7 @@ class Die:
     """A Die is a labeled rectangle in a window.
     It is activated or deactivated with the activate()
     and deactive() methods. The clicked(p) method
-    returns true if the button is active and p is inside it."""
+    returns true if the die is active and p is inside it."""
 
     def __init__(self, win, center, width):
         """ Creates a square button, eg:
@@ -54,7 +54,7 @@ class Die:
 
 
     def clicked(self, pt):
-        "Returns true if p is inside"
+        "Returns true if pt is inside the die"
         return (self.xmin <= pt.getX() <= self.xmax
                 and self.ymin <= pt.getY() <= self.ymax)
 
@@ -91,25 +91,32 @@ class Die:
         self.label.undraw()
         self.rect.undraw()
 
-    def undraw(self):
-        "Undraws the die from the graphics window."
-        self.label.draw()
-        self.rect.draw()
+    def __str__(self):
+        "returns: is active: (True or False), value: (value)"
+        return "is active: " + str(self.active) + ", value: " + str(self.val)
 
 
 def main():
     # testing out the die class
-    win = GraphWin("Button Testing", 300, 300)
+    win = GraphWin("Dice Testing", 300, 300)
 
+    # create a roll button
     b = Button(win, Point(50, 100), 50, 100, "Roll")
     b.activate()
+    
+    # create a toggle button
     toggle = Button(win, Point(50, 210), 50, 30, "toggle")
     toggle.activate()
+
+    # crate the die
     die = Die(win, Point(150, 100), 50)
+
+    # quit button
     quitButton = Button(win, Point(250, 100), 50, 100, "Quit")
     quitButton.activate()
-    
 
+    
+    # get user click until quit button is pressed
     pt = win.getMouse()
     while not(quitButton.clicked(pt)):
         if b.clicked(pt):
@@ -119,6 +126,10 @@ def main():
         if toggle.clicked(pt):
             print("Toggled button")
             die.toggle()
+
+        if die.clicked(pt):
+            die.toggle()
+            print("Die has been clicked")
     
         pt = win.getMouse()
 

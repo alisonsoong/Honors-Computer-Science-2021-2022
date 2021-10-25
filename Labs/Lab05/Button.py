@@ -39,7 +39,8 @@ class Button:
         self.deactivate()
 
     def clicked(self, pt):
-        "Returns true if button active and p is inside"
+        "Returns true if button active and pt is inside"
+        # only if active and the point is within the button
         return (self.active and self.xmin <= pt.getX() <= self.xmax
                 and self.ymin <= pt.getY() <= self.ymax)
 
@@ -63,12 +64,16 @@ class Button:
         self.label.setFill("darkgrey")
         self.rect.setWidth(1)
         self.active = False
+
+    def isActive(self):
+        "Returns true if the button is clickable (active)"
+        return self.active
         
     def toggle(self):
         "Toggles a button from activated to deactivated, or vice versa"
-        if self.active:
+        if self.active: # if active, deactivate
             self.deactivate()
-        else:
+        else: # if not active, activate
             self.activate()
 
     def undraw(self):
@@ -85,14 +90,19 @@ def main():
     # testing out the button class
     win = GraphWin("Button Testing", 300, 300)
 
+    # creating a test button
     b = Button(win, Point(50, 100), 50, 100, "Button")
     b.activate()
+
+    # creating a toggle botton
     toggle = Button(win, Point(50, 210), 50, 30, "toggle")
     toggle.activate()
+
+    # quit button
     quitButton = Button(win, Point(250, 100), 50, 100, "Quit")
     quitButton.activate()
     
-
+    # Get user click
     pt = win.getMouse()
     while not(quitButton.clicked(pt)):
         print(b)
@@ -102,8 +112,8 @@ def main():
             print("Toggled button")
             b.toggle()
         
-
         pt = win.getMouse()
+        
 
     win.close()
     

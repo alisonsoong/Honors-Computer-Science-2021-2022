@@ -10,9 +10,9 @@ from graphics import *
 
 class ScoreCell:
     """A ScoreCell is a cell on the score sheet visible to the
-    player on the window. It helps monitor each cell on the
-    score sheet that keeps track of the running score.
-    Includes the ability to calculate the score for each cell."""
+    player on the graphics window. It helps monitor each cell on the
+    score sheet and keeps track of the running score.
+    Includes the ability to calculate the score for a particular cell."""
 
     def __init__(self, win, center, width, height, typeCell):
         """ Creates a rectangular button, starts deactivated. eg:
@@ -120,6 +120,14 @@ class ScoreCell:
         # create instance variable for score
         self.score = 0
 
+        # counts start off as 0
+        self.num1 = 0
+        self.num2 = 0
+        self.num3 = 0
+        self.num4 = 0
+        self.num5 = 0
+        self.num6 = 0
+
         # start deactivated
         self.active = False
         self.done = False # start as not done
@@ -128,8 +136,10 @@ class ScoreCell:
     def resetForRound(self):
         "Resets the cell for every round"
         self.active = False
-        if not(self.done):
+        if not(self.done): # game is still going. only deactivate if not used
             self.deactivate()
+
+        # counts start off as 0
         self.num1 = 0
         self.num2 = 0
         self.num3 = 0
@@ -140,8 +150,10 @@ class ScoreCell:
     def resetForGame(self):
         "Resets the cell for every GAME"
         self.done = False # start as not done
-        self.active = False
+        self.active = False # start as not active
         self.deactivate() # start as deactivated
+
+        # counts start off as 0
         self.num1 = 0
         self.num2 = 0
         self.num3 = 0
@@ -174,7 +186,7 @@ class ScoreCell:
 
         """
         
-        # reset values
+        # reset values (counts)
         self.num1 = 0
         self.num2 = 0
         self.num3 = 0
@@ -276,6 +288,7 @@ class ScoreCell:
         """calculates and updates the 3 of a kind cell"""
         self.activate()
         val = 0
+        # if any of the counts are more than or equal to 3, this cell can be used
         if (self.num1 >= 3
             or self.num2 >= 3
             or self.num3 >= 3
@@ -289,6 +302,7 @@ class ScoreCell:
         """calculates and updates the 4 of a kind cell"""
         self.activate()
         val = 0
+        # if any of the counts are more than or equal to 4, this cell can be used
         if (self.num1 >= 4
             or self.num2 >= 4
             or self.num3 >= 4
@@ -304,6 +318,7 @@ class ScoreCell:
         val = 25 # full houses are 25 points
         
         doubleVal = 0
+        # doubleVal stays 0 if there are no pairs
         if self.num1 == 2:
             doubleVal = 1
         elif self.num2 == 2:
@@ -319,6 +334,7 @@ class ScoreCell:
 
 
         tripleVal = 0
+        # tripleVal stays 0 if there are no triplets
         if self.num1 == 3:
             tripleVal = 1
         elif self.num2 == 3:
@@ -333,10 +349,14 @@ class ScoreCell:
             tripleVal = 6
 
         # if both doubleVal and tripleVal exist (both are not 0)
+        # then there is a pair and a triplet (only possibility)
+        # and because we are checking for exaclty eqeual to 2 or 3, no chance
+        # of over-counting
         if (tripleVal != 0 and
             doubleVal != 0):
             self.setScore(val)
         else:
+            # if one, the other, or both don't exist, 0 points.
             self.setScore(0)
         
 
@@ -348,6 +368,8 @@ class ScoreCell:
         # only options: 1234 2345 3456
         achieved = False
 
+        # going through each of these options
+        # (and doing more than or equal to 1 to account for overcounts)
         if (self.num1 >= 1 and
             self.num2 >= 1 and
             self.num3 >= 1 and
@@ -363,7 +385,8 @@ class ScoreCell:
             self.num5 >= 1 and
             self.num6 >= 1):
             achieved = True
-        
+
+        # if a small straight has been achieved, set score to 30 points
         if achieved:
             self.setScore(val)
         else:
@@ -372,11 +395,12 @@ class ScoreCell:
     def largeStraight(self):
         """calculates and updates the small straight cell"""
         self.activate()
-        val = 40 # large straights are 30 points
+        val = 40 # large straights are 40 points
 
         # only options: 12345 23456
         achieved = False
 
+        # need exactly one of each in both of the cases
         if (self.num1 == 1 and
             self.num2 == 1 and
             self.num3 == 1 and
@@ -390,6 +414,7 @@ class ScoreCell:
             self.num6 == 1):
             achieved = True
 
+        # if a large straight has been achieved, set score to 40 points
         if achieved:
            self.setScore(val)
         else:
@@ -398,13 +423,16 @@ class ScoreCell:
     def chance(self):
         """calculates and updates the chance cell"""
         self.activate()
+        # get the sum of all the dice faces
         val = self.num1 + self.num2*2 + self.num3*3 + self.num4*4 + self.num5*5 + self.num6*6
         self.setScore(val)
 
     def yahtzee(self):
         """calculates and updates the yahtzee cell"""
         self.activate()
-        val = 0
+        val = 0 # stays 0 if no yahtzee
+
+        # if any of them equal are equal to 5, yahtzee has been achieved
         if self.num1 == 5:
             val = 1
         elif self.num2 == 5:
@@ -418,6 +446,7 @@ class ScoreCell:
         elif self.num6 == 5:
             val = 6
 
+        # either set to 0 or to 50
         if val == 0:
             self.setScore(0)
         else:
@@ -425,7 +454,7 @@ class ScoreCell:
     
         
     def clicked(self, pt):
-        "Returns true if cell is active and pt is inside"
+        "Returns true if cell is active, pt is inside, and the cell is not 'done'."
         return (self.active
                 and not(self.done)
                 and self.xmin <= pt.getX() <= self.xmax
@@ -459,6 +488,7 @@ class ScoreCell:
         Makes clicks on cell have no effect on the program."""
         self.rectScore.setFill("white")
         self.scoreLabel.setFill("black")
+        # reset the score value it holds
         self.score = 0
         self.scoreLabel.setText("")
         self.active = False
@@ -468,20 +498,25 @@ class ScoreCell:
         Makes clicks on cell have no effect on the program."""
         self.rectScore.setFill(color_rgb(217, 247, 205))
         self.scoreLabel.setFill("black")
+        # not active. done.
         self.active = False
         self.done = True
 
     def isDone(self):
         """Returns true if the cell is 'done'"""
         return self.done
+
+    def isActive(self):
+        """Returns true if the cell is 'active'"""
+        return self.active
         
     def toggle(self):
         "Toggles a cell from activated to deactivated, or vice versa"
-        if not(self.done):
-            if self.active:
+        if not(self.done): # if not done
+            if self.active: # if active, deactivate
                 self.deactivate()
             else:
-                self.activate()
+                self.activate() # if deactivated, activate
 
     def undraw(self):
         "Undraws the cell from the graphics window."
@@ -497,19 +532,22 @@ class ScoreCell:
 
 def main():
     # testing out the cell class
-    win = GraphWin("Button Testing", 300, 300)
+    win = GraphWin("Score Cell Testing", 300, 300)
 
+    # create the cell
     cell = ScoreCell(win, Point(100, 100), 100, 25, 13)
     cell.setScore(5)
     cell.activate()
 
+    # toggle button
     toggle = Button(win, Point(50, 210), 50, 30, "toggle")
     toggle.activate()
-    
+
+    # quit button
     quitButton = Button(win, Point(250, 200), 50, 100, "Quit")
     quitButton.activate()
     
-    
+    # get user click
     pt = win.getMouse()
     while not(quitButton.clicked(pt)):
         print(cell)
@@ -517,11 +555,11 @@ def main():
             print("cell is pressed")
             cell.used()
         if toggle.clicked(pt):
-            if cell.active and not(cell.done): # bad programming convention, but this is to check functionality
+            if cell.isActive() and not(cell.isDone()):
                 cell.deactivate()
-            elif not(cell.done):
+            elif not(cell.isDone()):
                 cell.activate()
-                cell.setScore(0)
+                cell.setScore(5)
                 
         pt = win.getMouse()
         

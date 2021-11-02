@@ -4,15 +4,14 @@
 # ISBN.py
 #
 
-from graphics import *
-from Button import Button
-
 def ISBN():
-    print("------This program returns what ISBN values are valid or invalid!------")
-
+    print("This program returns what ISBN values are valid or invalid.")
+    print("Values are given through an input file and results are saved in an output file")
+    print("NOTE: the files used will/should have the .py extension")
+    
     # get the input file name
-    fileName = input("Please enter the input file's name (with .py): ")
-    # make sure file name ends with .py
+    fileName = input("\nPlease enter the input file's name (with .py): ")
+    # make sure file name ends with .py (makes sure that thee name is possible...)
     if not(fileName[-3:] == ".py"):
         fileName += ".py"
 
@@ -34,10 +33,8 @@ def ISBN():
 
     outputFile = open(outputName, 'w')
 
-
     # otherwise if not an empty file, check all values and store them in
-    # valid or invalid lists
-    
+    #   valid or invalid lists
     valid = []
     invalid = []
     invalidReason = [] # reason for string at index i being invalid
@@ -47,7 +44,7 @@ def ISBN():
         # slice off the \n
         string = string[:-1]
         
-        print(string) # for testing purposes
+        # print(string) # for testing purposes
         
         if len(string) > 10:
             invalid.append(string)
@@ -59,7 +56,6 @@ def ISBN():
             continue
 
         # by now, the string has been guaranteed to be 10 characters long
-        print("String is 10 long")
 
         # a flag to tell us if we're done
         flag = False
@@ -121,15 +117,18 @@ def ISBN():
     print("...")
     print("...")
     print("\n-------Valid ISBNs-------", file=outputFile)
+    # print out the valid ISBNs
     for string in valid:
         print(string, file=outputFile)
     print("\n-------------------------", file=outputFile)
     print("\n------Invalid ISBNs------", file=outputFile)
+    # print out the invalid ISBNs and a reason for being invalid
     for i in range(len(invalid)):
         print(invalid[i] + " - Reason for being invalid: " + invalidReason[i], file=outputFile)
 
-    print("\nProgram is complete! See you next time!")
+    print("\nProgram is complete! Please check " + outputName + " to see the results. See you next time!")
 
+    # close output file
     outputFile.close()
 
 

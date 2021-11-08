@@ -14,7 +14,7 @@ def palindromeGUI():
           "palindromes or not.")
 
     # creating the objects needed
-    win = GraphWin("Palindrome Checker", 400, 400, autoflush = False)
+    win = GraphWin("Palindrome Checker", 800, 400, autoflush = False)
     win.setCoords(0,0,400,400)
 
     entry = Entry(Point(200,230), 20)

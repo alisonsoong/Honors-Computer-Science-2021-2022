@@ -9,10 +9,10 @@ from graphics import *
 class Button:
         """A button class specifically for Shark Runner Game"""
 
-        def __init__(self, center, w, l, label):
-                """Creates a button class.
-                ex: button = Button(Point(x,y), 0, 0, "Quit")."""
+        def __init__(self):
+                """Creates a button class."""
 
+        def init(self, center, w, l, label):
                 self.width,self.length,self.text = w,l,label
                 self.x,self.y = center.getX(),center.getY()
 
@@ -85,7 +85,8 @@ def main():
         win.setCoords(-100, -100, 100, 100)
 
         # create the button, and activate
-        quitButton = Button(Point(0,0),50,30, "quit")
+        quitButton = Button()
+        quitButton.init(Point(0,0),50,30, "quit")
         quitButton.activate()
         
         # draw the two components

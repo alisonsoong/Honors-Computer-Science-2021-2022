@@ -51,31 +51,26 @@ class Fish:
                 # set isEaten as false originally
                 self.isEaten = False
 
+        def isAlive():
+                "Returns if fish is eaten"
+                return self.isEaten
+        
         def getPosition(self):
                 "Returns position of fish, simultaneous assignment"
+                if !isAlive():
+                        self.x = -1
+                        self.y = -1
+                        
                 return self.x,self.y
+
+        def getTypeFish(self):
+                "Returns the type of the fish (1, 2, or 3). 1 has move priority over 2, and 2 has move priority over 3"
+                return self.fishNum
 
         def setPosition(self,newX, newY):
                 "Sets position of fish. Expects (newX, newY)"
                 self.x = newX
                 self.y = newY
-                
-        def move(self,posSharkX, posSharkY, posFish1X, posFish1Y, posFish2X, posFish2Y):
-                """Checks if the next position is taken.
-                Randomizes move/determines move according to the position of the shark.
-                Sets fish to fleeMode = True if fish is within three squares from the shark.
-                Possibly passes through the walls if fleeing, but will exit fleeMode once it does.
-                -> Updates position, direction, fleeMode
-                """
-
-
-                # check which new position (thus which direction) would
-                #       cause the fish to be the farthest from the shark if in fleeMode
-
-                # if not in fleeMode, keep moving in the same direction
-                #       until hit a wall, then go opposite direction
-
-                
 
         def isFleeing(self):
                 "Returns if fish is fleeing (fleeMode)"
@@ -84,14 +79,128 @@ class Fish:
         def setFleeing(self):
                 "Sets the fish to flee mode"
                 self.fleeMode = True
+                
+        def move(self,posSharkX, posSharkY, fishA, fishB):
+                """Checks if the next position is taken.
+                Randomizes move/determines move according to the position of the shark.
+                Sets fish to fleeMode = True if fish is within three squares from the shark.
+                Possibly passes through the walls if fleeing, but will exit fleeMode once it does.
+                -> Updates position, direction, fleeMode
+                """
+                dx, dy = getDirection()
+                x, y = getPosition()
+                
+                # check if in flee mode
+                if ((posSharkX - x)*(posSharkX - x) + (posSharkY - y)*(posSharkY - y) <= 9): # need to check if this is right
+                        setFleeing()
+
+                if !isFleeing():
+                        # keep in this direction
+                        nx, ny = dx+x, dy+y
+                        # reverse direction if hitting a wall
+                        nx, ny = getAdjustedPos(nx, ny)
+                        # check if move is not blocked by others
+                        nx, ny = checkMove(nx, ny, x, y)
+                        setPosition(nx, ny)
+                        
+                else:
+                        # calculate new direction and new position
+
+                        if posSharkX == x: # if the shark is on the same x axis
+                                # figure out and set new direction
+                                fleeDirection(posSharkX, posSharkY, fishA, fishB)
+                                dx, dy = getDirection()
+                                nx, ny = dx+x, dy+y
+                                nx, ny = getAdjustedFleeModePos(nx, ny, x, y, fishA, fishB)
+                                setPosition(nx, ny)
+        
+                        if posSharkY == y: # if the shark is on the same y axis
+                                # figure out and set new direction
+                                fleeDirection(posSharkX, posSharkY, fishA, fishB)
+                                dx, dy = getDirection()
+                                nx, ny = dx+x, dy+y
+                                nx, ny = getAdjustedFleeModePos(nx, ny, x, y, fishA, fishB)
+                                setPosition(nx, ny)
+                                
+                        # if the shark is at a diagonal, there is no "best"
+                        # move, so choose a random move that is still good
+                        if posSharkX != x and posSharkY != y:
+                                nx, ny = figureOutDiag(posSharkX, posSharkY, fishA, fishB)
+                                setPosition(nx, ny)
+
+        def checkMove(self, nx, ny, x, y, fishA, fishB):
+                """Checks move according to move priority,
+                   returns either the new position or the old position"""
+                xA, yA = fishA.getPosition()
+                xB, yB = fishB.getPosition()
+                if (xA == nx and yA == ny) or (xB == nx and yB == ny):
+                        return x,y
+                return nx, ny
+
+        def getAdjustedFleeModePos(self, nx, ny, x, y, fishA, fishB):
+                """Returns the position of the fish in flee mode"""
+                passedThroughWall = False
+                # If new
+
+                # checks if this new position is valid
+                nx, ny = checkMove(nx, ny, x, y, fishA, fishB) # returns original position (x,y) if it doesn't work
+                if not(nx == x and ny == y) and passedThroughWall:
+                        # has indeed moved through wall, even after check, so it is no longer in flee mode anymore
+                        resetFleeing()
+                          
+                return nx, ny
+                
+                        
+        def figureOutDiag(self, posSharkX, posSharkY, fishA, fishB): # TODO: finish
+                """Figures out move for diag, returns new position"""
+                # needs to figure out new position
+                x1,y1 = -1,-1 # horizontal move
+                dirX = ""
+                x2,y2 = -1,-1 # vertical move
+                numMoves = 0
+                x,y = getPosition()
+                if posSharkX - x > 0: # the shark is to the right
+                        x1,y1 = x-1, y-1
+                        checkMove(x1,y1,x1,y1,fishA, fishB)
+                        
+
+        def fleeDirection(self, posSharkX, posSharkY):
+                """figures out and sets the new direction according
+                to shark position if in flee mode"""
+                x, y = getPosition()
+                if x == posSharkX:
+                        if (posSharkX - x > 0): # the shark is to the right of the fish
+                                setDirection("L")
+                        if (posSharkX - x < 0): # the shark is to the left of the fish
+                                setDirection("R")
+
+                if y == posSharkY:
+                        if (posSharkY - y > 0): # the shark is below the fish
+                                setDirection("U")
+                        if (posSharkY - y < 0): # the shark is above the fish
+                                setDirection("D")
+                
+                      
+        def getAdjustedPos(self, nx, ny):
+                """Returns the adjusted position: specifically checks
+                if hitting a wall when NOT in flee mode"""
+                if nx > 10:
+                        setDirection("L")
+                        nx = 9
+                elif nx < 1:
+                        setDirection("R")
+                        nx = 2
+                elif ny > 10:
+                        setDirection("U")
+                        ny = 9
+                elif ny < 1:
+                        setDirection("D")
+                        ny = 2
+                return nx, ny
 
         def resetFleeing(self):
                 "Sets the fish to NOT flee mode"
                 self.fleeMode = False
-
-        def isAlive():
-                "Returns if fish is eaten"
-                return self.isEaten
 
         def eaten():
                 "Sets fish as eaten"

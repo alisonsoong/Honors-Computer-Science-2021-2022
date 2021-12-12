@@ -11,8 +11,11 @@ class Button:
 
         def __init__(self):
                 """Creates a button class."""
+                # the rest of the button's information is setup with init()
+                # this is to aid SharkGUI's implementation.
 
         def init(self, center, w, l, label):
+                """Finishes the setup for the button class"""
                 self.width,self.length,self.text = w,l,label
                 self.x,self.y = center.getX(),center.getY()
 

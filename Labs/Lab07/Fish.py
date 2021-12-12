@@ -4,8 +4,9 @@
 # Fish.py
 #
 
-import random
-from graphics import * 
+# un-comment these if you wish to test out the fish class
+# import random
+# from graphics import * 
 
 class Fish:
         """A fish class that describes all movement and states of a fish"""

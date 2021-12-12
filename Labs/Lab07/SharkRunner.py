@@ -10,7 +10,6 @@ from Fish import *
 from Shark import *
 from SharkGUI import *
 
-
 def main():
         # intro
         print("Welcome to Shark Runner!")
@@ -26,11 +25,11 @@ def main():
 
         while True:
                 if sharkGUI.update():
+                        # update sharkGUI. if it returns true, then the game is over
                         print("Thank you for playing Shark Runner")
                         break
-                elif sharkGUI.checkIfStalemate():
-                        # if game is not over after sharkGUI update,
-                        # but there is a stalemate detected
+                elif sharkGUI.checkIfStalemate(): # if sharkGUI update returns false...
+                        # the game is not over, but check if stalemate detected
                         print("Stalemate! Thank you for playing Shark Runner.")
                         break
 

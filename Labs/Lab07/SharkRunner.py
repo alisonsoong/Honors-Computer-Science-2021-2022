@@ -5,6 +5,7 @@
 #
 
 from graphics import *
+import random
 from Button import *
 from Fish import *
 from Shark import *

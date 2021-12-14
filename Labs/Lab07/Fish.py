@@ -4,7 +4,8 @@
 # Fish.py
 #
 
-# un-comment these if you wish to test out the fish class
+# un-comment these import statements if you wish to test
+#       out the fish class through its main function
 # import random
 # from graphics import * 
 
@@ -58,9 +59,9 @@ class Fish:
                 # was previously not fleeing and is now fleeing (needed for logic)
                 self.nowFleeingWasFine = False
 
-        def isEaten(self):
-                "Returns true if fish has been eaten"
-                return self.isEaten
+        def isAlive(self):
+                "Returns true if fish is alive"
+                return not(self.isEaten)
         
         def getPosition(self):
                 "Returns position of fish, simultaneous assignment: x,y"
@@ -71,7 +72,7 @@ class Fish:
 
                 return self.x,self.y
 
-        def eaten():
+        def eaten(self):
                 "Sets fish as eaten"
                 self.isEaten = True
 
@@ -292,6 +293,19 @@ class Fish:
                                 self.setDirection(dir2)
                                 return x2, y2
                 if numMoves == 2: # get random position because both movese are valid
+                        if dir1 == self.getDirectionString(): # if current direction is valid, go for it
+                                if passedThroughWall1:
+                                        self.resetFleeing()
+                                self.setDirection(dir1)
+                                return x1, y1
+                                
+                        if dir2 == self.getDirectionString(): # if current direction is valid, go for it
+                                if passedThroughWall2:
+                                        self.resetFleeing()
+                                self.setDirection(dir2)
+                                return x2, y2
+                        
+                        # otherwise, randomize direction/movement
                         randNum = random.randint(1,2) # random integer between 1 and 2
                         if randNum == 1: # if ranNum is 1, choose first move
                                 if passedThroughWall1:

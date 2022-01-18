@@ -106,5 +106,4 @@ def sumOfEven(n):
     print("The sum of the first", n, "even numbers is", result)
 
 
-    
 

@@ -6,8 +6,8 @@
 
 # un-comment these import statements if you wish to test
 #       out the fish class through its main function
-# import random
-# from graphics import * 
+import random
+from graphics import * 
 
 class Fish:
         """A fish class that describes all movement and states of a fish"""

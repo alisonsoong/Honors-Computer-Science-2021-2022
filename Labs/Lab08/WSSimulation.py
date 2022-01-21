@@ -13,7 +13,6 @@ def main():
     numGames = getUserInput() # get number of games
     simWS(numGames)
     print("\n\nThank you for visiting the World Series Simulator!")
-    
 
 def introduction():
     print("Welcome to the World Series Simulator!")
@@ -76,8 +75,8 @@ def simOneWS(astrosPlayers, bravesPlayers, outFile): # one WS
     gameNum = 0
     while bWins != 4 and aWins != 4:
         gameNum += 1
-        winner, aScore, bScore = simOneGame(astrosPlayers, bravesPlayers, gameNum, outFile, True)
-        if winner: # astros won
+        aScore, bScore = simOneGame(astrosPlayers, bravesPlayers, gameNum, outFile, True)
+        if aScore > bScore: # astros won
             print("Game", str(gameNum) + ":", "Astros", aScore, "Braves", bScore)
             aWins += 1
         else: # braves won
@@ -101,6 +100,7 @@ def printHomeRuns(astrosPlayers, bravesPlayers):
     astrosPlayers.sort(key=WSPlayer.getHR, reverse=True)
     bravesPlayers.sort(key=WSPlayer.getFullName)
     bravesPlayers.sort(key=WSPlayer.getHR, reverse=True)
+
 
     counter = 0
     start = True # print out the astros
@@ -145,28 +145,107 @@ def simOneGame(astrosPlayers, bravesPlayers, gameNum, outFile, singleGame):
         print("\n=========== GAME", gameNum, "===========", file = outFile)
 
     astrosScore = 0
-    bravesScore = 1
+    bravesScore = 0
     inning = 1
     indexAstrosPlayers = 0
     indexBravesPlayers = 0
     # keep on printing game details to outFile if we are in a single game
-    while(inning != 10 or (bravesScore == astrosScore)):
-        simOneInning("Astros", astrosPlayers, outFile, singleGame, indexAstrosPlayers, inning)
-        simOneInning("Braves", astrosPlayers, outFile, singleGame, indexAstrosPlayers, inning)
+    while(inning < 10 or (bravesScore == astrosScore)):
+        indexAstrosPlayers, astrosScore = simOneInning("Astros", astrosPlayers, outFile, singleGame, indexAstrosPlayers, inning, astrosScore)
+        indexAstrosPlayers, bravesScore = simOneInning("Braves", bravesPlayers, outFile, singleGame, indexAstrosPlayers, inning, bravesScore)
         inning += 1
         if (singleGame): # only print to the file if single game only
             print("\nScore: Astros " + str(astrosScore) + " Braves " + str(bravesScore), file = outFile)
+            
+    return astrosScore, bravesScore
 
 
-    return False, astrosScore, bravesScore
-
-
-def simOneInning(team, players, outFile, singleGame, indexOfPlayers, inning):
+def simOneInning(team, players, outFile, singleGame, indexOfPlayers, inning, curScore):
     numPlayers = len(players)
     if (singleGame): # only print to the file if single game only
         print("\nInning " + str(inning) + " - " + team, file = outFile)
-  
+    bases = [None, None, None] # [1st base, 2nd base, 3rd base]. Empty string means no one is there
+    strikeout = 0
+    while strikeout != 3:
+        player = players[indexOfPlayers]
+        result = player.getHit()
+        name = player.getName()
+        if result == 0:
+            if (singleGame):
+                print(name + " struck out", end=" ", file=outFile)
+            strikeout += 1
+        elif result == 1:
+            if (singleGame):
+                print(name + " singled", end=" ", file=outFile)
+            if bases[-1] != None: # someone is on third base
+                curScore += 1 # they score
+                if (singleGame):
+                    print("(" + bases[-1] + " scored)", end=" ", file=outFile)
+            firstBase = bases[0]
+            secondBase = bases[1]
+            bases = [name, firstBase, secondBase]
+        elif result == 2: # double
+            if (singleGame):
+                print(name + " doubled", end=" ", file=outFile)
+            counter = 0
+            if bases[-1] != None: # someone is on third base
+                curScore += 1 # they score
+                counter += 1
+                if (singleGame):
+                    print("(" + bases[-1] + " scored", end="", file=outFile)
+            if bases[-2] != None: # someone is on second base
+                curScore += 1 # they score
+                if (singleGame):
+                    if (counter == 0):
+                        print("(" + bases[-2] + " scored)", end="", file=outFile)
+                    else:
+                        print(" and " + bases[-2] + " scored", end="", file=outFile)
+            elif counter == 1:
+                if singleGame:
+                    print(")", end=" ", file=outFile)
+            firstBase = bases[0]
+            bases = [None, name, firstBase]
+        elif result == 3: # triple
+            if (singleGame):
+                print(name + " tripled", end=" ", file=outFile)
+            counter = 0
+            for base in bases:
+                if base != None: # they score
+                    if counter == 0 and singleGame:
+                        print("(" + base, end="", file=outFile)
+                    elif singleGame:
+                        print(" and " + base, end="", file=outFile)
+                    counter += 1
+            if (counter != 0 and singleGame):
+                print(" scored)", end=" ", file=outFile)
+            bases = [None, None, name]
+        elif result == 4: # homerun
+            player.incrHR()
+            if (singleGame):
+                print(name + " homered", end=" ", file=outFile)
+            counter = 0
+            curScore += 1
+            for i in range(3):
+                if bases[i] != None:
+                    curScore += 1 # they score
+                    if (counter != 0 and singleGame):
+                        print(" and " + bases[i], end="", file=outFile)
+                    elif singleGame:
+                        print("(" + bases[i], end="", file=outFile)
+                    counter += 1
+            if (singleGame and counter != 0):
+                print(" scored)", end=" ", file=outFile)                    
+            bases = [None,None,None] # no one on base
+            
+        indexOfPlayers = (indexOfPlayers + 1) % numPlayers
+        if (singleGame):
+            print(file=outFile)
+            # print(bases, file=outFile)
 
+            
+    return indexOfPlayers, curScore
+        
+  
 def simMultWS(numGames, astrosPlayers, bravesPlayers, outFile):
     Braves = [0] * 4
     Astros = [0] * 4
@@ -193,8 +272,8 @@ def simOneForMult(astrosPlayers, bravesPlayers, outFile):
     gameNum = 0
     while bWins != 4 and aWins != 4:
         gameNum += 1
-        winner, aScore, bScore = simOneGame(astrosPlayers, bravesPlayers, gameNum, outFile, False)
-        if winner: # astros won
+        aScore, bScore = simOneGame(astrosPlayers, bravesPlayers, gameNum, outFile, False)
+        if aScore > bScore: # astros won
             aWins += 1
         else: # braves won
             bWins += 1
@@ -205,7 +284,6 @@ def simOneForMult(astrosPlayers, bravesPlayers, outFile):
         whoWonSeries = True
 
     return whoWonSeries, gameNum
-    
     
         
 if __name__ == '__main__': main()

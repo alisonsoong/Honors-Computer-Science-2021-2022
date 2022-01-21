@@ -2,6 +2,8 @@
 # Alison Soong
 #
 
+import random
+
 # WSPlayer
 class WSPlayer:
     """Represents a player in the World Series."""
@@ -19,6 +21,12 @@ class WSPlayer:
         self.doublesData = dou
         self.triplesData = tr
         self.homeRunsData = hr
+
+        self.singlesPercent = float(hits-dou-tr-hr)/hits
+        self.doublesPercent = float(dou)/hits
+        self.triplesPercent = float(tr)/hits
+        self.HRPercent = float(hr)/hits
+        #print(self.singlesPercent, self.doublesPercent, self.triplesPercent, self.HRPercent)
 
         self.homeRuns = 0 # start with zero home runs
 
@@ -40,6 +48,34 @@ class WSPlayer:
         "Adds onee to HR count"
         self.homeRuns += 1
 
+    def getHit(self):
+        """Calculates what kind of hit (if any), and returns:
+            0 = miss
+            1 = single
+            2 = double
+            3 = triple
+            4 = homerun
+        """
+
+        didHitRandom = random.random()
+        # print(didHitRandom, self.batAvg)
+        if didHitRandom > self.batAvg:
+            return 0 # they missed
+        else:
+            typeHitRandom = random.random()
+            # print(typeHitRandom)
+            if typeHitRandom < self.singlesPercent:
+                # single
+                return 1
+            elif typeHitRandom < self.singlesPercent + self.doublesPercent:
+                # double range
+                return 2
+            elif typeHitRandom < self.singlesPercent + self.doublesPercent + self.triplesPercent:
+                # triple range
+                return 3
+            else:
+                return 4
+            
     def __str__(self):
         "Describes the WSPlayer"
         returnVal = self.lastName + ", " + self.firstName + ", batAvg: "
@@ -50,7 +86,10 @@ class WSPlayer:
 
 def main():
     # test out the WSPlayer
-    p = WSPlayer("Altuve", "Jose", 0.278, 167, 32, 1, 31)
+    p = WSPlayer("Altuve", "Jose", 0.978, 167, 30, 32, 31)
+    a = p.getHit()
+    print(a)
+    
     print(p.getName())
     
 if __name__ == "__main__": main()
